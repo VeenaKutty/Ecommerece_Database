@@ -428,3 +428,99 @@ join Sales s
 on p.prod_id = s.prod_id
 group by p.prod_name
 having Total_Sales > 10000;
+
+-- 26\. Find customers whose total sales exceed ₹5,000.
+
+select c.first_name,c.last_name,sum(s.sales) as Total_Sales
+from customers c
+left join sales s
+on c.cust_id = s.cust_id
+group by c.first_name, c.last_name
+having Total_sales > 5000;
+
+select concat(coalesce(c.first_name,""),' ',coalesce(c.last_name,"")) as Full_Name,
+sum(s.sales) as Total_Sales
+from customers c
+left join sales s
+on c.cust_id = s.cust_id
+group by Full_Name
+having Total_sales > 5000;
+
+-- 27\. Identify locations where total revenue exceeds ₹10,000.
+
+select o.shipping_address, sum(s.sales*s.quantity) as Total_Revenue
+from orders as o
+join sales as s
+on o.order_id = s.order_id
+group by o.shipping_address
+having Total_Revenue > 10000;
+
+--  Display each customer's full name and annual income.
+
+select concat(coalesce(first_name,""),' ',coalesce(last_name," ")) as Full_Name,
+annual_income
+from customers;
+
+-- 29\. Find customers who have placed more than one order.
+
+select cust_id, count(*) as Total_Orders
+from Orders
+group by cust_id
+having total_orders > 1;
+
+-- 30\. Identify customers who have never placed an order.
+
+select * from customers
+where cust_id not in (select distinct cust_id from orders);
+
+
+-- 31\. Find customers who have made purchases worth more than ₹10,000 in total.
+
+select cust_id , sum(sales) as Total_sales
+from sales
+group by cust_id
+having total_sales > 10000;
+
+-- 32\. Identify the customer who generated the highest total revenue.
+
+select cust_id, sum(sales*quantity) as Total_Revenue
+from sales
+group by cust_id
+order by Total_Revenue desc limit 1;
+
+select * from customers
+where cust_id = (select cust_id
+from sales
+group by cust_id
+order by sum(sales*quantity) desc limit 1);
+
+-- 33\. Find the number of orders placed by each customer.
+
+select cust_id, count(*) as Total_Orders
+from Orders
+group by Cust_ID;
+
+-- 34\. Calculate the average order value for each customer.
+
+select cust_id, avg(sales) as Average_Order_Value
+from Sales
+group by cust_id;
+
+-- 35\. Identify customers who have cancelled orders.
+
+select Cust_id, order_status
+from orders
+where order_status = "Cancelled";
+
+-- 36\. Find customers who have both delivered and cancelled orders.
+
+select Cust_id, order_status
+from orders
+where order_status = "Cancelled" or order_status = "Delivered";
+
+-- 37\. Identify customers who have not made any successful payments.
+select Cust_id, payment_status
+from payments
+join orders
+on payments.order_id = orders.order_id
+where payment_status = "Pending";
